@@ -1,0 +1,29 @@
+This provides an OpenVPN config file parser for phpBB using BBcode.
+
+== Installation ==
+Installation of this BBcode requires a few steps. 
+
+1) Install openvpn_parser.html
+
+   The file openvpn_parser.html needs to be included in your style template
+   directory.  For the OpenVPN forums, this is in our openvpn style path:
+     styles/openvpn/template/openvpn_parser.html
+
+2) Enable/Include parser template
+
+   Edit the overall_footer.html file of your chosen style, adding the following
+   line above the "EVENT overall_footer_body_after" and closing </body> tag:
+
+      <!-- INCLUDE openvpn_parser.html -->
+
+3) Create a new BBcode in the phpBB administration interface
+
+   BBCode usage:
+      [oconf={SIMPLETEXT} #ignoreSurroundingWhitespace=false]{TEXT}[/oconf]
+
+   HTML replacement:
+      copy/paste text from the oconf.html file in this repo
+
+   Help line
+      OpenVPN Config Parser
+

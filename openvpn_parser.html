@@ -1,0 +1,116 @@
+<!-- This is used by the oconf BB tag to parse openvpn configurations -->
+<style type="text/css">
+        .ovpn_cont {
+                border: 1px solid darkgrey;
+		position: relative;
+        }
+        .ovpn_title {
+                border-bottom: 2px solid darkgrey;
+                padding: 3px;
+                background: linear-gradient(rgb(163,182,200),rgb(123,150,176));
+                position: relative;
+        }
+        .ovpn_config {
+                font-family: monospace;
+                background: #FFF;
+        	position: relative;
+	}
+        .ovpn_line, .linnum, .lincont {
+                display: inline-block;
+        }
+        .ovpn_line:hover {
+                background: lightgrey;
+        }
+        .linnum {
+                min-width: 3em;
+                text-align: right;
+                padding-right: 7px;
+                border-right: 1px solid darkgrey;
+                -moz-user-select: none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                user-select: none;
+        }
+        .lincont {
+                padding-left: 7px;
+        }
+        .ovpn_line {
+                width: 100%;
+        }
+        .conf_swap {
+                float: right;
+        }
+</style>
+<script type="text/javascript">
+    var configs = document.getElementsByClassName("ovpn_config");
+    var arr = [].slice.call(configs);
+    arr.forEach(function(config) {
+        console.log(config);
+        var pretty = config.getElementsByClassName("ovpn_pretty").item(0);
+        var post = config.getElementsByClassName("ovpn_post").item(0);
+        var out = post.innerHTML;
+	console.log(out);
+	// strip out inline certificates and keys
+        out=out.replace(/<br\/?>/gm, "\n");
+	out=out.replace(/(<|\&lt;)cert(>|\&gt;)[\s\S]*(<|\&lt;)\/cert(>|\&gt;)/gm, "&lt;cert&gt;\n--STRIPPED INLINE CERT--\n&lt;/cert&gt;");
+	out=out.replace(/(<|&lt;)ca(>|&gt;)[\s\S]*(<|&lt;)\/ca(>|&gt;)/gm, "&lt;ca&gt;\n--STRIPPED INLINE CA CERT--\n&lt;/ca&gt;");
+	out=out.replace(/(<|&lt;)key(>|&gt;)[\s\S]*(<|&lt;)\/key(>|&gt;)/gm, "&lt;key&gt;\n--STRIPPED INLINE KEY--\n&lt;/key&gt;");
+        lin_num(post);
+        out=out.replace(/<(?:.|\n)*?>/gm, "");
+        // strip out comment lines
+	out=out.replace(/(#.*)|(\s+;.*)/gm, "");
+	// remove empty lines
+        out=out.replace(/^[\s]*[\r\n]|^#.*|^;.*/gm, "");
+        pretty.innerHTML=out;
+        console.log(lin_num(pretty));
+        pretty.innerHTML=lin_num(pretty);
+        post.style.display="none";
+        pretty.style.display="block";
+	post.innerHTML=post.innerHTML.replace(/<br>/gm, "\n");
+	post.innerHTML=post.innerHTML.replace(/(<|\&lt;)cert(>|\&gt;)[\s\S]*(<|\&lt;)\/cert(>|\&gt;)/gm, "&lt;cert&gt;\n--STRIPPED INLINE CERT--\n&lt;/cert&gt;");
+	post.innerHTML=post.innerHTML.replace(/(<|&lt;)ca(>|&gt;)[\s\S]*(<|&lt;)\/ca(>|&gt;)/gm, "&lt;ca&gt;\n--STRIPPED INLINE CA CERT--\n&lt;/ca&gt;");
+	post.innerHTML=post.innerHTML.replace(/(<|&lt;)key(>|&gt;)[\s\S]*(<|&lt;)\/key(>|&gt;)/gm, "&lt;key&gt;\n--STRIPPED INLINE KEY--\n&lt;/key&gt;");
+	post.innerHTML=lin_num(post);
+    });
+    function makeid(){
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            for( var i=0; i < 5; i++ ){
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
+        return text;
+    }
+    function lin_num(text){
+        var id = makeid();    
+        console.log(text);
+        var text_ar = text.innerHTML.split("\n");
+        console.log("Total Lines: " + text_ar.length);
+        console.log(text_ar);
+        var out = "";
+        var linnum = 1;
+        text_ar.forEach(function(line){
+            if (linnum < text_ar.length){
+                out+="<div id=\""+id+linnum+"\" class=\"ovpn_line\"><div class=\"linnum\">"+linnum+"</div><div class=\"lincont\">"+line+"</div></div>\n";
+                linnum++;
+            }
+        });
+        return out;
+    }
+    function swap_conf(button){
+        var p = button.parentNode.parentNode;
+        var pretty = p.getElementsByClassName("ovpn_pretty").item(0);
+        var post = p.getElementsByClassName("ovpn_post").item(0);
+
+        console.log(p);
+        if (button.innerHTML == "View Original"){
+                pretty.style.display="none";
+                post.style.display="block";
+                button.innerHTML = "View Formatted";
+        } else {
+                pretty.style.display="block";
+                post.style.display="none";
+                button.innerHTML = "View Original";
+        }
+    }
+</script>
